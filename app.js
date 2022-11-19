@@ -7,6 +7,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const { getUsers, createUser } = require("./controllers/user");
+const { createExercise, getUserExercises } = require("./controllers/exercise");
 
 /*
  ** **
@@ -37,6 +39,22 @@ mongoose
  ** **
  */
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
+app.use(express.json({ limit: "10kb" })); // json parser
+app.use(express.urlencoded({ extended: true })); //url encoder parser
+
+/*
+ ** **
+ ** ** ** ROUTES
+ ** **
+ */
+//Get all users
+app.route("/api/users").get(getUsers).post(createUser);
+
+//Create an exercise for users
+app.route("/api/users/:id/exercise").post(createExercise);
+
+//Get all exercises of users
+app.route("/api/users/:id/logs").get(getUserExercises);
 
 /*
  ** **
