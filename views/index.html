@@ -595,7 +595,7 @@
           if (date) formData.append("date", date);
 
           //5) Send a response
-          fetch(`/api/users/${user}/exercise`, {
+          fetch(`/api/users/${user}/exercises`, {
             method: "POST",
             body: new URLSearchParams(formData),
           })
