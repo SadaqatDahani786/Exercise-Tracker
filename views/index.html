@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exercise Tracker</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        font-size: 62.5%;
+        font-family: arial, sans-serif;
+
+        /* Colors properties */
+        --color-primary: #ff9f1c;
+        --color-primary-light: #ffbf69;
+        --color-secondary: #2ec4b6;
+        --color-secondary-light: #cbf3f0;
+        --color-tertiary: #ffffff;
+
+        --color-error: #db3030;
+        --color-success: #39c;
+      }
+      body {
+        background-color: var(--color-primary);
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      main {
+        margin: 0 auto;
+        padding: 20px 0;
+        max-width: 60rem;
+        min-height: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+      }
+      section {
+        width: 100%;
+      }
+      h1 {
+        font-size: 4rem;
+        color: var(--color-tertiary);
+      }
+      h2 {
+        font-size: 3.2rem;
+        color: var(--color-secondary);
+      }
+      label {
+        font-size: 1.6rem;
+        color: var(--color-secondary);
+      }
+      input,
+      textarea {
+        font-size: 1.6rem;
+        width: 30rem;
+        background: var(--color-secondary);
+        padding: 10px 5px;
+        border: none;
+        border-radius: 5px;
+        color: var(--color-tertiary);
+        transition: all 0.1s ease;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        opacity: 0.95;
+      }
+      textarea {
+        resize: none;
+        min-height: 10rem;
+      }
+      input:hover,
+      textarea:hover {
+        color: var(--color-secondary-light);
+      }
+      input:focus,
+      textarea:focus {
+        background: var(--color-tertiary);
+        color: var(--color-secondary);
+      }
+      select {
+        color: var(--color-secondary);
+        background-color: var(--color-tertiary);
+        border: 1px solid var(--color-secondary);
+        padding: 10px 5px;
+        cursor: pointer;
+        transition: all 0.1s ease;
+      }
+      select.block {
+        width: 100%;
+      }
+      .form-wrapper {
+        display: none;
+        margin: 0 auto;
+        padding: 50px;
+        width: max-content;
+        min-width: 50rem;
+        background: var(--color-secondary-light);
+        border-radius: 20px;
+        display: none;
+      }
+      .active {
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+      }
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+      .form-group {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        max-height: 400px;
+        overflow: auto;
+      }
+      .form-input {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      button {
+        width: 100%;
+        padding: 10px 5px;
+        cursor: pointer;
+        border: none;
+        border-radius: 100px;
+        background-color: var(--color-tertiary);
+        color: var(--color-secondary);
+        transition: all 0.1s ease;
+      }
+      button:hover {
+        color: var(--color-secondary-light);
+      }
+      button:disabled {
+        color: gray;
+        opacity: 0.9;
+        cursor: not-allowed;
+        background-color: rgb(244, 226, 226);
+      }
+      table {
+        border: 1px solid var(--color-secondary);
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--color-secondary);
+        text-align: left;
+      }
+      thead {
+        position: sticky;
+        top: 0;
+        background: var(--color-secondary);
+        color: var(--color-tertiary);
+      }
+      th {
+        border: 1px solid var(--color-secondary);
+        font-size: 2rem;
+        font-weight: bold;
+        padding: 20px;
+      }
+      td {
+        padding: 5px 10px;
+        font-size: 1.6rem;
+        border: 1px solid var(--color-secondary);
+      }
+      .alert {
+        width: 100%;
+        background: var(--color-tertiary);
+        padding: 2rem;
+        border-radius: 20px;
+        display: none;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 2rem;
+        margin: 0 auto;
+        text-align: left;
+      }
+      .alert--active {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+      .alert--info {
+        color: var(--color-success);
+      }
+      .alert--error {
+        color: var(--color-error);
+      }
+      .alert .message {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .alert .message-title {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        font-weight: bold;
+      }
+      .alert i {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        font-size: 1.7rem;
+      }
+      .alert--info i {
+        border: 2px solid var(--color-secondary-light);
+      }
+      .alert--error i {
+        border: 2px solid var(--color-primary-light);
+      }
+      .alert a {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        color: var(--color-tertiary);
+        background: var(--color-secondary);
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .alert--info a {
+        color: var(--color-tertiary);
+        background: var(--color-success);
+      }
+      .alert--error a {
+        color: var(--color-tertiary);
+        background: var(--color-error);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="main">
+      <div class="alert alert--info">
+        <div class="message">
+          <div class="message-title">
+            <i>&#8505;</i>
+            Success!
+          </div>
+          <p>User "sadaqat" has beeen created successfully.</p>
+        </div>
+        <a href="" id="close-button">&times;</a>
+      </div>
+      <div class="alert alert--error">
+        <div class="message">
+          <div class="message-title">
+            <i>&#9888;</i>
+            Failed!
+          </div>
+          <p></p>
+        </div>
+        <a href="" id="close-button">&times;</a>
+      </div>
+      <h1>Exercise Tracker</h1>
+      <form class="form-action">
+        <label>
+          Choose an action:
+          <select default="create-user" id="action">
+            <option selected value="create-user">Create User</option>
+            <option value="create-exercise">Create Exercise</option>
+            <option value="get-users">Get Users</option>
+            <option value="get-users-exercises">Get User's Exercises</option>
+          </select>
+        </label>
+      </form>
+      <section>
+        <div class="form-wrapper user active">
+          <h2>Create a New User</h2>
+          <form class="form form-create-user">
+            <div class="form-group">
+              <div class="form-input">
+                <label> Username </label>
+                <input type="text" name="username" placeholder="Username" />
+              </div>
+            </div>
+            <div class="form-group">
+              <button type="submit">Create</button>
+            </div>
+          </form>
+        </div>
+        <div class="form-wrapper exercise">
+          <h2>Create a New Exercise</h2>
+          <form class="form form-create-exercise">
+            <div class="form-group">
+              <div class="form-input">
+                <label> User </label>
+                <input type="text" name="user" placeholder="User ID" />
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-input">
+                <label> Description </label>
+                <textarea
+                  name="description"
+                  placeholder="Enter an exercise description here..."
+                ></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-input">
+                <label> Duration </label>
+                <input
+                  name="duration"
+                  placeholder="Number of Minutes"
+                  type="number"
+                  min="1"
+                  max="300"
+                  step="1"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-input">
+                <label> Date (Optional) </label>
+                <input name="date" type="date" />
+              </div>
+            </div>
+            <div class="form-group">
+              <button type="submit">Create</button>
+            </div>
+          </form>
+        </div>
+        <div class="form-wrapper users">
+          <h2>All Users</h2>
+          <div class="form-group">
+            <table>
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Username</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>--</td>
+                  <td>--</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="form-group">
+            <button id="get-users" type="submit">Retrieve</button>
+          </div>
+        </div>
+        <div class="form-wrapper logs">
+          <h2>User's Exercises Logs</h2>
+          <form class="form form-get-user-exercises">
+            <div class="form-group">
+              <div class="form-input">
+                <label>User</label>
+              </div>
+              <div class="form-input">
+                <select class="select-user block">
+                  <option disabled selected>Select User</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-input">
+                <label>Limit</label>
+              </div>
+              <div class="form-input">
+                <input name="limit" type="number" min="1" max="100" />
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-input">
+                <label>Date From</label>
+              </div>
+              <div class="form-input">
+                <input type="date" name="date-from" />
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-input">
+                <label>Date To</label>
+              </div>
+              <div class="form-input">
+                <input type="date" name="date-to" />
+              </div>
+            </div>
+            <div class="form-group">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Duration</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="form-group">
+              <button type="submit">Retrieve</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+    <script>
+      /*
+       ** **
+       ** ** ** RESET
+       ** **
+       */
+      document.querySelector(".form-action").reset();
+      document.querySelector(".form-get-user-exercises").reset();
+
+      /*
+       ** **
+       ** ** ** ACTIVATE CURRENT ACTION
+       ** **
+       */
+      document.querySelector("#action").addEventListener("change", (e) => {
+        //1) Get value
+        const val = e.target.value;
+
+        //2) Close dialogs
+        AlertDialog("error", false);
+        AlertDialog("info", false);
+
+        //3) Activate the active tab
+        switch (val) {
+          case "create-user":
+            activateActiveClass("user");
+            break;
+          case "create-exercise":
+            activateActiveClass("exercise");
+            break;
+          case "get-users":
+            activateActiveClass("users");
+            break;
+          case "get-users-exercises":
+            getUsers(false);
+            activateActiveClass("logs");
+            break;
+        }
+      });
+
+      /*
+       ** **
+       ** ** ** CLOSE ALERT DIALOG
+       ** **
+       */
+      /*
+       ** ==========================================================
+       ** Alert Dialog Error
+       ** ==========================================================
+       */
+      document
+        .querySelector(".alert--error a")
+        .addEventListener("click", (e) => {
+          //Prevent default
+          e.preventDefault();
+
+          //Remove active class
+          document
+            .querySelector(".alert--error")
+            .classList.remove("alert--active");
+        });
+
+      /*
+       ** ==========================================================
+       ** Alert Dialog Info
+       ** ==========================================================
+       */
+      document
+        .querySelector(".alert--info a")
+        .addEventListener("click", (e) => {
+          //Prevent default
+          e.preventDefault();
+
+          //Remove active class
+          document
+            .querySelector(".alert--info")
+            .classList.remove("alert--active");
+        });
+
+      /*
+       ** **
+       ** ** ** CREATE USER
+       ** **
+       */
+      document
+        .querySelector(".form-create-user")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          //1) Get username
+          const username = document
+            .querySelector('input[name="username"]')
+            .value.trim();
+
+          //2) Validate empty fields
+          if (username === undefined || username === null || username === "") {
+            return alert("Please enter a username.");
+          }
+
+          //3 Create form data
+          const formData = new FormData();
+          formData.append("username", username);
+
+          //4) Close previous alerts before making a new request
+          AlertDialog("error", false);
+          AlertDialog("info", false);
+
+          //5) Send a request to server
+          fetch("/api/users", {
+            method: "POST",
+            body: new URLSearchParams(formData),
+          })
+            .then((res) => {
+              if (!res.ok) return Promise.reject(res);
+              return res.json();
+            })
+            .then((resJson) => {
+              e.target.reset();
+              AlertDialog(
+                "info",
+                true,
+                `User "${resJson.username}" has been created successfully.`
+              );
+            })
+            .catch((err) => {
+              err.json().then((errJson) => {
+                AlertDialog("error", true, errJson.error);
+              });
+            });
+        });
+
+      /*
+       ** **
+       ** ** ** CREATE USER EXERCISE
+       ** **
+       */
+      document
+        .querySelector(".form-create-exercise")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          //1) Get form values
+          const user = document
+            .querySelector('input[name="user"]')
+            .value.trim();
+          const description = document
+            .querySelector('textarea[name="description"]')
+            .value.trim();
+          const duration = document
+            .querySelector('input[name="duration"]')
+            .value.trim();
+          const date = document
+            .querySelector('input[name="date"]')
+            .value.trim();
+
+          //2) Close previous alerts before making a new request
+          AlertDialog("error", false);
+          AlertDialog("info", false);
+
+          //3) Validate
+          if (!user || !description || !duration) {
+            return alert("Don't leave empty fields.");
+          }
+
+          //4) FormData
+          const formData = new FormData();
+          formData.append("description", description);
+          formData.append("duration", duration);
+          if (date) formData.append("date", date);
+
+          //5) Send a response
+          fetch(`/api/users/${user}/exercise`, {
+            method: "POST",
+            body: new URLSearchParams(formData),
+          })
+            .then((res) => {
+              if (!res.ok) return Promise.reject(res);
+              return res.json();
+            })
+            .then((resJson) => {
+              e.target.reset();
+              AlertDialog(
+                "info",
+                true,
+                `Exercise for user "${resJson.user}" has been created successfully.`
+              );
+            })
+            .catch((err) => {
+              err.json().then((errJson) => {
+                AlertDialog("error", true, errJson.error);
+              });
+            });
+        });
+
+      /*
+       ** **
+       ** ** ** GET ALL USERS
+       ** **
+       */
+      /*
+       ** ==========================================================
+       ** Click listener to get users
+       ** ==========================================================
+       */
+      document.querySelector("#get-users").addEventListener("click", (e) => {
+        e.preventDefault();
+        getUsers(true);
+      });
+
+      /*
+       ** ==========================================================
+       ** Get users from server
+       ** ==========================================================
+       */
+      const getUsers = (isGetUser) => {
+        //1) Reset
+        if (isGetUser)
+          document.querySelector(".users table tbody").innerHTML =
+            "<td>--</td><td>--</td>";
+        AlertDialog("error", false);
+
+        //2) Get users
+        fetch("/api/users")
+          .then((res) => {
+            if (!res.ok) return Promise.reject(res);
+            return res.json();
+          })
+          .then((resJson) => {
+            if (isGetUser) {
+              const rows = resJson.map(
+                (c) => `<tr><td>${c._id}</td><td>${c.username}</td><tr>`
+              );
+              document.querySelector(".users table tbody").innerHTML =
+                rows.length > 0
+                  ? rows.join("")
+                  : `<td colspan="2">No users found, please add some users first.</td>`;
+            } else {
+              const options = resJson.map(
+                (c) => `<option value="${c._id}">${c.username}</option>`
+              );
+              document.querySelector(".select-user").innerHTML =
+                "<option disabled selected value='select-user'>Select User</option>" +
+                options.join("");
+            }
+          })
+          .catch((err) => {
+            err.json().then((errJson) => {
+              AlertDialog("error", true, errJson.error);
+            });
+          });
+      };
+
+      /*
+       ** **
+       ** ** ** GET USER'S EXERCISES
+       ** **
+       */
+      document
+        .querySelector(".form-get-user-exercises")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          //1) Reset
+          document.querySelector(".logs table tbody").innerHTML =
+            "<td>--</td><td>--</td><td>--</td>";
+          AlertDialog("error", false);
+
+          //2) Get fields values
+          const user = document.querySelector(".select-user").value;
+          const limit = document.querySelector('input[name="limit"]').value;
+          const dateFrom = document.querySelector(
+            'input[name="date-from"]'
+          ).value;
+          const dateTo = document.querySelector('input[name="date-to"]').value;
+
+          //3) Validate
+          if (user === "select-user") {
+            return alert("Please select a user.");
+          }
+
+          //4) Create parameters
+          const params = new URLSearchParams();
+          if (limit) params.append("limit", limit);
+          if (dateFrom) params.append("from", dateFrom);
+          if (dateTo) params.append("to", dateTo);
+
+          //5) Send a request
+          fetch(`/api/users/${user}/logs?${params.toString()}`)
+            .then((res) => {
+              if (!res.ok) return Promise.reject(res);
+              return res.json();
+            })
+            .then((resJson) => {
+              const rows = resJson.logs.map(
+                (c) =>
+                  `<tr><td>${c.description}</td><td>${c.duration}</td><td>${c.date}</td><tr>`
+              );
+              document.querySelector(".logs table tbody").innerHTML =
+                rows.length > 0
+                  ? rows.join("")
+                  : `<td colspan="3">No logs found for user <strong>"${resJson.username}"</strong>.</td>`;
+            })
+            .catch((err) => {
+              err.json().then((errJson) => {
+                AlertDialog("error", true, errJson.error);
+              });
+            });
+        });
+
+      /*
+       ** **
+       ** ** ** UTILITY FUNCTIONS
+       ** **
+       */
+      /*
+       ** ==========================================================
+       ** Helper fucntion to add/remove active class
+       ** ==========================================================
+       */
+      const activateActiveClass = (className) => {
+        document.querySelectorAll(".form-wrapper").forEach((c) => {
+          c.classList.remove("active");
+        });
+        document.querySelector(`.${className}`).classList.add("active");
+      };
+
+      /*
+       ** ==========================================================
+       ** AlertDialog
+       ** ==========================================================
+       */
+      const AlertDialog = (type = "info", show = true, message = "") => {
+        if (show) {
+          document
+            .querySelector(`.alert--${type}`)
+            .classList.add("alert--active");
+          document.querySelector(`.alert--${type} p`).innerHTML = message;
+        } else {
+          document
+            .querySelector(`.alert--${type}`)
+            .classList.remove("alert--active");
+        }
+      };
+    </script>
+  </body>
+</html>

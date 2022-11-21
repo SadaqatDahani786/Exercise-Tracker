@@ -40,13 +40,18 @@ mongoose
  */
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 app.use(express.json({ limit: "10kb" })); // json parser
-app.use(express.urlencoded({ extended: true })); //url encoder parser
+app.use(express.urlencoded({ extended: false })); //url encoder parser
 
 /*
  ** **
  ** ** ** ROUTES
  ** **
  */
+//Get index file
+app.route("/").get((req, res) => {
+  res.sendFile(__dirname + "/views/index.html");
+});
+
 //Get all users
 app.route("/api/users").get(getUsers).post(createUser);
 
