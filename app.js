@@ -56,7 +56,7 @@ app.route("/").get((req, res) => {
 app.route("/api/users").get(getUsers).post(createUser);
 
 //Create an exercise for users
-app.route("/api/users/:id/exercise").post(createExercise);
+app.route("/api/users/:id/exercises").post(createExercise);
 
 //Get all exercises of users
 app.route("/api/users/:id/logs").get(getUserExercises);

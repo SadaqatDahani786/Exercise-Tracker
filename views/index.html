@@ -717,7 +717,7 @@
               return res.json();
             })
             .then((resJson) => {
-              const rows = resJson.logs.map(
+              const rows = resJson.log.map(
                 (c) =>
                   `<tr><td>${c.description}</td><td>${c.duration}</td><td>${c.date}</td><tr>`
               );

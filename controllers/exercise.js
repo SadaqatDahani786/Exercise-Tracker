@@ -42,7 +42,7 @@ const getUserExercises = async (req, res) => {
     res.status(200).json({
       ...user,
       count: exercises.length,
-      logs: exercises.map((exercise) => ({
+      log: exercises.map((exercise) => ({
         ...exercise,
         date: new Date(exercise.date).toDateString(),
       })),
@@ -62,13 +62,11 @@ const getUserExercises = async (req, res) => {
  */
 const createExercise = async (req, res) => {
   try {
-    //1) Get fields from post body
+    //1) Get fields from post body and user id from params
     const { description, duration, date } = req.body;
+    const userId = req.params.id;
 
-    //2) Get user id from params
-    const userId = req.params.id; //Create exercise
-
-    //3) Create exercise
+    //2) Create exercise
     const createdExercise = await Exercise.create({
       description,
       duration,
@@ -76,9 +74,27 @@ const createExercise = async (req, res) => {
       user: userId,
     });
 
-    //4) Send response
-    res.status(201).json(createdExercise);
+    //3) Get exercise with populated filed user
+    const exercisePopulated = await Exercise.findById(createdExercise._id, {
+      _id: false,
+      __v: false,
+    })
+      .populate("user")
+      .lean();
+
+    //4) Transform
+    const updatedExercise = {
+      ...exercisePopulated,
+      _id: exercisePopulated.user._id,
+      username: exercisePopulated.user.username,
+      user: undefined,
+      date: new Date(exercisePopulated.date).toDateString(),
+    };
+
+    //5) Send response
+    res.status(201).json(updatedExercise);
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       status: "failed",
       error: "Internal server error, something went wrong.",
